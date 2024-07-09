@@ -1,3 +1,6 @@
+//Lop VehicleManager co tac dung doc mot loi giai cua mot Individual
+//Sau do "giai ma" va cai thien loi giai nay de sinh ra mot loi giai tot hon va tinh gia tri ham muc tieu cua loi giai do
+//No hoat dong dua tren danh sach phuong tien
 import Model.Assignment;
 import Model.Order;
 import Model.Vehicle;
@@ -8,7 +11,9 @@ import java.util.Comparator;
 import java.util.Scanner;
 
 public class VehicleManager {
+    //Danh sach phuong tien
     ArrayList<Vehicle> vehicles;
+    //2 danh sach phuong tien loai 1 va loai 2
     ArrayList<Vehicle> low;
     ArrayList<Vehicle> up;
     public VehicleManager(int k){
@@ -20,6 +25,7 @@ public class VehicleManager {
         //vehicles.add(v);
         low.add(v);
     }
+    //Giai doan 1 cua thuat toan Local Search, gan cac don hang co the duoc gan vao phuong tien hien tai
     public void assign(Individual individual){
         Collections.shuffle(individual.assignments);
         for(Assignment a: individual.assignments){
@@ -31,8 +37,9 @@ public class VehicleManager {
         }
         updateLowUp();
     }
+    //Giai doan 2 cua thuat toan Local Search, gan cac don hang chua duoc gan vao phuong tien hop le
     public void reAssign(Individual individual){
-        //Collections.shuffle(individual.assignments);
+        Collections.shuffle(individual.assignments);
         Collections.shuffle(low);
         Collections.shuffle(up);
         for(Assignment a: individual.assignments){
@@ -62,6 +69,7 @@ public class VehicleManager {
             }
         });
     }
+    //Thuc hien phan chia 2 loai phuong tien de kich hoat ham Repair()
     private void updateLowUp(){
         for(Vehicle v: low){
             if(v.curWeight>=v.low_cap){
@@ -70,11 +78,11 @@ public class VehicleManager {
         }
         low.removeAll(up);
     }
+    //Giai doan 3 cua thuat toan chinh la ham Repair()
     private void repair(Individual individual){
         Collections.shuffle(low);
         Collections.shuffle(up);
         for(Vehicle v1: low){
-            int lowReq = v1.low_cap - v1.curWeight;
             int upReq = v1.up_cap - v1.curWeight;
             for(Vehicle v2: up){
                 int overLow = v2.curWeight - v2.low_cap;
@@ -101,6 +109,7 @@ public class VehicleManager {
             }
         }
     }
+    //Tinh gia tri fitness cua individual hien tai sau khi thuc hien localSearch
     public int computeFitness(){
         int tmp=0;
         //int violated = 0;
@@ -109,6 +118,8 @@ public class VehicleManager {
         }
         return tmp;
     }
+    //Reset lai cac thong so cua cac phuong tien de thuc hien tinh toan individual tiep theo
+    //Chinh la "bo het" cac don hang ra khoi xe de "xep lai" cac don hang khac vao xe
     void reset(){
         low.clear();
         up.clear();
@@ -118,22 +129,13 @@ public class VehicleManager {
         }
         vehicles.clear();
     }
-
-    public void printSol() {
-        for(Vehicle v: vehicles){
-            System.out.println("Vehicle "+v.id+", low_cap is "+v.low_cap+", up_cap is "+v.up_cap+", current cap is "+v.curWeight);
-        }
-    }
-    public void capacityCheck(){
-        int violated = 0;
+    //Kiem tra tinh dung dan cua loi giai hien tai thong qua cac rang buoc ve tai trong
+    public boolean capacityCheck() {
         for(Vehicle v: vehicles){
             if(v.isViolated()){
-                violated++;
-                System.out.println(v.low_cap+" "+v.curWeight);
+                return false;
             }
         }
-        if(violated==0){
-            System.out.println("Satisfied all capacity checks");
-        }
+        return true;
     }
 }

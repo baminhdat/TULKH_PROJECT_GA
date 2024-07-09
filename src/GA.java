@@ -1,3 +1,5 @@
+//Day la lop chinh cua giai thuat di truyen
+//No dieu khien lop con cua giai thuat, cu the la lop Population luu tru cac loi giai
 import Model.Assignment;
 import Model.Order;
 import Model.Vehicle;
@@ -32,25 +34,31 @@ public class GA {
         geNumber = Settings.iterationNumber;
     }
     Population population;
+    //Phuong thuc co ban cua lop GA la thuc hien khoi tao quan the moi va goi cac phuong thuc lai ghep cua Population
+    //Hoac thuc hien Repeated Local Search bang cach khoi tao quan the loi giai lien tuc
     void run(){
         population = new Population();
-        for(int i=0;i<geNumber;i++){
-            //System.out.println((i+1)+" "+population.best.fitness);
-//            for(Assignment a: population.best.assignments){
-//                System.out.print(a.vehicleIndex+" ");
-//            }
-//            System.out.println();
-            population.generateNextGeneration();
-            if(population.wOImprovement==population.maxWO){
-                //population.maxWO+=50;
-                population.wOImprovement = 0;
+        int iteration = 0;
+        if(!Settings.repeatedLocalSearchOnly) {
+            //Phai lap lai den khi tim duoc mot loi giai dung
+            while (!population.best.isCorrect || iteration < geNumber) {
+                iteration++;
+                System.out.println(population.best.fitness);
+                population.generateNextGeneration();
+                //Neu so luong the he khong co su cai thien cao thi khoi tao mot quan the moi va lai tao tu dau
+                if (population.wOImprovement == population.maxWO) {
+                    population.wOImprovement = 0;
+                    population.generateInitialIndividuals();
+                }
+            }
+        }
+        else{
+            //Repeated Local Search bang cach khoi tao quan the loi giai lien tuc
+            while(!population.best.isCorrect || iteration < geNumber){
+                iteration++;
                 population.generateInitialIndividuals();
             }
         }
-        //System.out.println(population.best.fitness);
-//        for(Vehicle v: vehicleManager.vehicles){
-//            System.out.println(v.low_cap+" "+v.up_cap);
-//        }
         population.best.printSol();
     }
 }

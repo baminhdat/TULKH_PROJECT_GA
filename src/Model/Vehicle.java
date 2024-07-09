@@ -1,3 +1,4 @@
+//Lop Vehicle thao tac 1 phuong tien
 package Model;
 
 import java.util.ArrayList;
@@ -19,39 +20,37 @@ public class Vehicle {
         orders = new ArrayList<>();
         reset();
     }
+    //Reset lai cac chi so de tinh toan loi giai ke tiep
     public void reset(){
         curProfit = 0;
         curWeight = 0;
         orders.clear();
-        //bestOrder=-1;
     }
+    //Gan 1 don hang vao 1 phuong tien
     public boolean assign(Order o){
         if(curWeight+o.cost<=up_cap) {
             curWeight += o.cost;
             curProfit += o.profit;
             orders.add(o);
-//            if (o.profit > bestOrder) {
-//                bestOrder = o.profit;
-//            }
             return true;
         }
         else return false;
     }
+    //Bo mot don hang khoi 1 phuong tien
     public void remove(Order o){
-        //if(orders.contains(o)){
             orders.remove(o);
             curWeight-=o.cost;
             curProfit-=o.profit;
-        //}
     }
+    //Tra ve tong gia tri don hang tru di mot ham penalty, tuc la hinh phat
+    //Penalty, theo nhu quan sat thuc nghiem, chi co tac dung trong thuat toan GA
     public int computeFitness(){
-//        int tmp =  curProfit+(min(curWeight-low_cap,0)+min(up_cap-curWeight,0))*penalty;
         int tmp = curProfit;
         tmp+= min(curWeight-low_cap,0)*penalty;
         return tmp;
     }
-
+    //Kiem tra rang buoc ve tai trong
     public boolean isViolated() {
-        return (curWeight-low_cap<0);
+        return (curWeight-low_cap<0)||(curWeight-up_cap>0);
     }
 }
